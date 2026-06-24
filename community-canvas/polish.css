@@ -1,0 +1,106 @@
+:root {
+  --hero-measure: 1040px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 64px 0 34px;
+}
+
+.hero-page {
+  padding-top: 58px;
+}
+
+.hero-context {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+  max-width: none;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-context p + p {
+  max-width: 420px;
+  margin-top: 0;
+  text-align: right;
+}
+
+.hero-title {
+  max-width: var(--hero-measure);
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: break-word;
+}
+
+h1 {
+  max-width: 940px;
+  font-size: clamp(3rem, 5.8vw, 5.7rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+h2,
+.lede {
+  text-wrap: balance;
+}
+
+.lede {
+  margin-top: 22px;
+}
+
+.submit-note {
+  padding: 0 0 22px;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
+}
+
+.faq-section a {
+  color: var(--ink);
+  font-weight: 800;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .hero,
+  .submit-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-context {
+    max-width: none;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero-context {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .hero-context p + p {
+    max-width: 640px;
+    text-align: left;
+  }
+
+  .instructions ol,
+  .form-grid,
+  .about-story article,
+  .dialog-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 540px) {
+  h1 {
+    font-size: clamp(2.85rem, 15vw, 4.4rem);
+  }
+}
