@@ -69,11 +69,28 @@ h2,
   text-underline-offset: 4px;
 }
 
-.other-method-field {
-  margin-top: 2px;
+.choice-group .other-method-field {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  margin-top: 6px;
+  padding-top: 2px;
 }
 
-.other-method-field input:disabled {
+.choice-group .other-method-field span {
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.choice-group .other-method-field input {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 9px 11px;
+}
+
+.choice-group .other-method-field input:disabled {
   opacity: 0.45;
 }
 
