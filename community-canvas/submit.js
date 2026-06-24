@@ -6,6 +6,9 @@
     form: document.getElementById("submissionForm"),
     fileInput: document.getElementById("artworkFile"),
     emailInput: document.getElementById("emailInput"),
+    paperConfirmInput: document.getElementById("paperConfirmInput"),
+    methodInputs: Array.from(document.querySelectorAll('input[name="artworkMethod"]')),
+    otherMethodInput: document.getElementById("otherMethodInput"),
     consentInput: document.getElementById("consentInput"),
     previewImage: document.getElementById("previewImage"),
     previewText: document.getElementById("previewText"),
@@ -20,6 +23,8 @@
   function bindEvents() {
     elements.fileInput.addEventListener("change", handleFileChange);
     elements.form.addEventListener("submit", handleSubmit);
+    elements.methodInputs.forEach((input) => input.addEventListener("change", updateOtherMethodState));
+    updateOtherMethodState();
   }
 
   function updateConfiguredState() {
@@ -89,6 +94,26 @@
       return;
     }
 
+    if (!elements.paperConfirmInput.checked) {
+      setStatus("Please confirm the artwork uses the recycled studio paper.", "error");
+      elements.paperConfirmInput.focus();
+      return;
+    }
+
+    const selectedMethods = getSelectedMethods();
+
+    if (!selectedMethods.length) {
+      setStatus("Please choose how the recycled paper was used.", "error");
+      elements.methodInputs[0].focus();
+      return;
+    }
+
+    if (selectedMethods.includes("other") && !cleanText(elements.otherMethodInput.value)) {
+      setStatus("Please briefly explain the other way the recycled paper was used.", "error");
+      elements.otherMethodInput.focus();
+      return;
+    }
+
     if (!elements.consentInput.checked) {
       setStatus("Please confirm the permission and credit statement before submitting.", "error");
       elements.consentInput.focus();
@@ -153,10 +178,26 @@
       image_path: imagePath,
       image_mime_type: file.type,
       image_size: file.size,
+      paper_confirmed: elements.paperConfirmInput.checked,
+      artwork_methods: getSelectedMethods(),
+      artwork_method_other: cleanText(formData.get("artworkMethodOther")),
       permission_confirmed: elements.consentInput.checked,
       source_url: window.location.href,
       user_agent: navigator.userAgent
     };
+  }
+
+  function getSelectedMethods() {
+    return elements.methodInputs.filter((input) => input.checked).map((input) => input.value);
+  }
+
+  function updateOtherMethodState() {
+    const isOtherSelected = getSelectedMethods().includes("other");
+    elements.otherMethodInput.disabled = !isOtherSelected;
+
+    if (!isOtherSelected) {
+      elements.otherMethodInput.value = "";
+    }
   }
 
   function updatePreview(imageUrl, message) {
