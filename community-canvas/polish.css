@@ -69,6 +69,19 @@ h2,
   text-underline-offset: 4px;
 }
 
+.other-method-field {
+  margin-top: 2px;
+}
+
+.other-method-field input:disabled {
+  opacity: 0.45;
+}
+
+.danger-button {
+  border-color: #8a3d37;
+  color: #8a3d37;
+}
+
 @media (max-width: 1100px) {
   .hero,
   .submit-layout {
