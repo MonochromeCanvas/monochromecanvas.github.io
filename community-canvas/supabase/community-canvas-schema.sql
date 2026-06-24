@@ -54,6 +54,9 @@ create table if not exists public.community_canvas_submissions (
   image_path text not null,
   image_mime_type text,
   image_size integer,
+  paper_confirmed boolean not null default false,
+  artwork_methods text[] not null default '{}',
+  artwork_method_other text,
   permission_confirmed boolean not null default false,
   source_url text,
   user_agent text,
@@ -80,6 +83,11 @@ execute function public.community_canvas_set_updated_at();
 
 alter table public.community_canvas_submissions enable row level security;
 
+alter table public.community_canvas_submissions
+  add column if not exists paper_confirmed boolean not null default false,
+  add column if not exists artwork_methods text[] not null default '{}',
+  add column if not exists artwork_method_other text;
+
 grant select, insert on public.community_canvas_submissions to anon;
 grant select, insert, update, delete on public.community_canvas_submissions to authenticated;
 
@@ -92,6 +100,8 @@ with check (
   status = 'pending'
   and featured = false
   and heart_count = 0
+  and paper_confirmed = true
+  and array_length(artwork_methods, 1) is not null
   and permission_confirmed = true
   and artist_email is not null
   and image_path like 'pending/%'
