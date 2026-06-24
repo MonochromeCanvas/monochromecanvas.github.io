@@ -96,7 +96,7 @@
 
     if (error) {
       console.error(error);
-      setLoginStatus("Could not send the sign-in link. Check your Supabase Auth settings.", "error");
+      setLoginStatus(getAuthErrorMessage(error), "error");
       return;
     }
 
@@ -258,6 +258,17 @@
     }
 
     return submission.artist_name || "Public credit selected, no artist name shared";
+  }
+
+  function getAuthErrorMessage(error) {
+    const code = String(error && (error.code || error.error_code || error.status) ? error.code || error.error_code || error.status : "");
+    const message = String(error && error.message ? error.message : "");
+
+    if (code === "over_email_send_rate_limit" || code === "429" || /rate limit/i.test(message)) {
+      return "Supabase is temporarily rate-limiting sign-in emails. Please wait about an hour and try again.";
+    }
+
+    return "Could not send the sign-in link. Check the email address or try again in a few minutes.";
   }
 
   function setLoginStatus(message, tone) {
