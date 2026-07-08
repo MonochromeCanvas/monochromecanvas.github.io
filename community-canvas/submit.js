@@ -13,6 +13,8 @@
     previewImage: document.getElementById("previewImage"),
     previewText: document.getElementById("previewText"),
     formStatus: document.getElementById("formStatus"),
+    fallbackStatus: document.getElementById("fallbackStatus"),
+    fallbackEmailLink: document.getElementById("fallbackEmailLink"),
     submitButton: document.getElementById("submitButton"),
     nicknameInput: document.getElementById("nicknameInput")
   };
@@ -33,7 +35,8 @@
     }
 
     elements.submitButton.disabled = true;
-    setStatus("The submission inbox is being connected. Please check back soon.", "error");
+    setStatus("The online upload is being connected. Please use the email fallback below.", "error");
+    showEmailFallback();
   }
 
   function handleFileChange() {
@@ -76,7 +79,8 @@
     const supabase = communityCanvas && communityCanvas.getClient();
 
     if (!supabase) {
-      setStatus("The submission inbox is being connected. Please check back soon.", "error");
+      setStatus("The online upload is being connected. Please use the email fallback below.", "error");
+      showEmailFallback();
       return;
     }
 
@@ -152,7 +156,8 @@
       setStatus("Thank you. Your artwork has been sent to Monochrome Canvas for review.", "success");
     } catch (error) {
       console.error(error);
-      setStatus("Something did not go through. Please try again, or email studio@monochromecanvas.com.", "error");
+      setStatus("Something did not go through. Please use the email fallback below.", "error");
+      showEmailFallback();
     } finally {
       setBusy(false);
     }
@@ -209,11 +214,62 @@
     elements.formStatus.textContent = message;
     elements.formStatus.classList.toggle("is-error", tone === "error");
     elements.formStatus.classList.toggle("is-success", tone === "success");
+
+    if (tone !== "error" && elements.fallbackStatus) {
+      elements.fallbackStatus.hidden = true;
+    }
   }
 
   function setBusy(isBusy) {
     elements.submitButton.disabled = isBusy;
     elements.submitButton.textContent = isBusy ? "Sending..." : "Submit for review";
+  }
+
+  function showEmailFallback() {
+    if (!elements.fallbackStatus || !elements.fallbackEmailLink) {
+      return;
+    }
+
+    elements.fallbackEmailLink.href = buildFallbackEmailHref();
+    elements.fallbackStatus.hidden = false;
+  }
+
+  function buildFallbackEmailHref() {
+    const formData = new FormData(elements.form);
+    const file = elements.fileInput.files && elements.fileInput.files[0];
+    const selectedMethods = getSelectedMethods();
+    const methodLine = selectedMethods.length ? selectedMethods.join(", ") : "";
+    const body = [
+      "Hello Monochrome Canvas,",
+      "",
+      "I would like to submit artwork for the Recycled Studio Paper Gallery.",
+      "",
+      "Please attach the artwork photo to this email before sending.",
+      file ? "Selected file name: " + file.name : "Selected file name:",
+      "",
+      "Artwork title: " + (cleanText(formData.get("title")) || "Untitled"),
+      "Artist email: " + cleanText(formData.get("email")),
+      "Public credit: " + (formData.get("creditMode") === "public" ? "Publish artist info" : "Publish anonymously"),
+      "Artist/display name: " + cleanText(formData.get("artistName")),
+      "Social handle: " + cleanText(formData.get("social")),
+      "Website or portfolio: " + cleanText(formData.get("website")),
+      "Location or connection: " + cleanText(formData.get("location")),
+      "Paper use: " + methodLine,
+      "Other paper use: " + cleanText(formData.get("artworkMethodOther")),
+      "",
+      "Note about the artwork:",
+      cleanText(formData.get("artworkNote")),
+      "",
+      "Monochrome Canvas note:",
+      cleanText(formData.get("endorsement")),
+      "",
+      "I confirm this artwork was made using Monochrome Canvas recycled studio paper and I have permission to submit it."
+    ].join("\n");
+
+    return "mailto:studio@monochromecanvas.com?subject=" +
+      encodeURIComponent("Recycled Studio Paper Gallery submission") +
+      "&body=" +
+      encodeURIComponent(body);
   }
 
   function cleanText(value) {
