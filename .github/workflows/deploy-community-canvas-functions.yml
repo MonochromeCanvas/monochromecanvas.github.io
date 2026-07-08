@@ -1,0 +1,44 @@
+name: Deploy Community Canvas Supabase Functions
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: marobxcafpzqrriipjdw
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      COMMUNITY_CANVAS_WEBHOOK_SECRET: ${{ secrets.COMMUNITY_CANVAS_WEBHOOK_SECRET }}
+      COMMUNITY_CANVAS_NOTIFY_TO: studio@monochromecanvas.com
+      COMMUNITY_CANVAS_NOTIFY_FROM: Community Canvas <notifications@monochromecanvas.com>
+      COMMUNITY_CANVAS_ADMIN_URL: https://monochromecanvas.github.io/community-canvas/admin/
+      COMMUNITY_CANVAS_BUCKET: community-canvas-artwork
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Set Community Canvas function secrets
+        working-directory: community-canvas
+        run: |
+          supabase secrets set \
+            RESEND_API_KEY="$RESEND_API_KEY" \
+            COMMUNITY_CANVAS_WEBHOOK_SECRET="$COMMUNITY_CANVAS_WEBHOOK_SECRET" \
+            COMMUNITY_CANVAS_NOTIFY_TO="$COMMUNITY_CANVAS_NOTIFY_TO" \
+            COMMUNITY_CANVAS_NOTIFY_FROM="$COMMUNITY_CANVAS_NOTIFY_FROM" \
+            COMMUNITY_CANVAS_ADMIN_URL="$COMMUNITY_CANVAS_ADMIN_URL" \
+            COMMUNITY_CANVAS_BUCKET="$COMMUNITY_CANVAS_BUCKET" \
+            --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Deploy Community Canvas notification function
+        working-directory: community-canvas
+        run: supabase functions deploy community-canvas-notify --project-ref "$SUPABASE_PROJECT_ID"
