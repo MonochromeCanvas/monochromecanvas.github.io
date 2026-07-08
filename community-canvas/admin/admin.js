@@ -90,7 +90,7 @@
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.href,
+        emailRedirectTo: getAdminRedirectUrl(),
         shouldCreateUser: true
       }
     });
@@ -330,11 +330,26 @@
       return "Supabase is temporarily rate-limiting sign-in emails. Please wait about an hour and try again.";
     }
 
+    if (/redirect/i.test(message)) {
+      return "Supabase rejected the admin redirect URL. I updated the page to use the clean admin URL; refresh and try again.";
+    }
+
+    if (message) {
+      return "Could not send the sign-in link: " + message;
+    }
+
     return "Could not send the sign-in link. Check the email address or try again in a few minutes.";
   }
 
+  function getAdminRedirectUrl() {
+    const redirectUrl = new URL(window.location.href);
+    redirectUrl.search = "";
+    redirectUrl.hash = "";
+    return redirectUrl.toString();
+  }
+
   function setLoginStatus(message, tone) {
-    setStatus(elements.loginStatus, message, tone);
+    setStatus(elements.loginStatus, tone);
   }
 
   function setAdminStatus(message, tone) {
