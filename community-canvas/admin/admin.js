@@ -349,7 +349,7 @@
   }
 
   function setLoginStatus(message, tone) {
-    setStatus(elements.loginStatus, tone);
+    setStatus(elements.loginStatus, message, tone);
   }
 
   function setAdminStatus(message, tone) {
