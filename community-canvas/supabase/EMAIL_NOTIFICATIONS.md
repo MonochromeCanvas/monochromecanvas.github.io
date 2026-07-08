@@ -27,6 +27,24 @@ Resend-approved sender while testing.
 
 ## Deploy The Function
 
+### Option A: GitHub Actions
+
+This repository includes a manual workflow at:
+
+`.github/workflows/deploy-community-canvas-functions.yml`
+
+Add these GitHub repository secrets first:
+
+```text
+SUPABASE_ACCESS_TOKEN
+RESEND_API_KEY
+COMMUNITY_CANVAS_WEBHOOK_SECRET
+```
+
+Then open **Actions** -> **Deploy Community Canvas Supabase Functions** -> **Run workflow**.
+
+### Option B: Local Supabase CLI
+
 From the `community-canvas` folder, deploy:
 
 ```bash
@@ -51,7 +69,7 @@ In Supabase:
 6. URL:
 
 ```text
-https://marobxcafpzqrriipjdw.functions.supabase.co/community-canvas-notify
+https://marobxcafpzqrriipjdw.supabase.co/functions/v1/community-canvas-notify
 ```
 
 7. Add header:
