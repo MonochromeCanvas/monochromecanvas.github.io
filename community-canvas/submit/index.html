@@ -6,7 +6,7 @@
     <title>Submit Artwork | Recycled Studio Paper Gallery</title>
     <meta name="description" content="Submit artwork made on Monochrome Canvas recycled studio paper.">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=20260626-community-canvas">
-    <link rel="stylesheet" href="../style.css?v=20260624-polish">
+    <link rel="stylesheet" href="../style.css?v=20260708-fallback">
     <link rel="stylesheet" href="../polish.css?v=20260624-other-field">
   </head>
   <body>
@@ -44,6 +44,7 @@
             <li>Public artist credit is optional; anonymous submissions are welcome.</li>
             <li>Social handles and websites are displayed as text, not outbound links.</li>
             <li>Monochrome Canvas may share approved work on social media with the credit you provide.</li>
+            <li>If the online upload is unavailable, email the artwork photo and submission details to studio@monochromecanvas.com.</li>
           </ul>
         </aside>
 
@@ -170,6 +171,11 @@
           <div class="form-actions">
             <button id="submitButton" class="button" type="submit">Submit for review</button>
             <p id="formStatus" class="form-status" aria-live="polite"></p>
+            <p id="fallbackStatus" class="form-status fallback-status" hidden>
+              Online upload is temporarily unavailable. Please email your artwork photo to
+              <a id="fallbackEmailLink" href="mailto:studio@monochromecanvas.com">studio@monochromecanvas.com</a>
+              and include the submission details from this form.
+            </p>
           </div>
         </form>
       </section>
@@ -183,6 +189,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config.js?v=20260624-paper-methods"></script>
     <script src="../supabase-client.js?v=20260624-paper-methods"></script>
-    <script src="../submit.js?v=20260624-paper-methods"></script>
+    <script src="../submit.js?v=20260708-fallback"></script>
   </body>
 </html>
