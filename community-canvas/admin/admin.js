@@ -338,7 +338,7 @@
       return "Could not send the sign-in link: " + message;
     }
 
-    return "Could not send the sign-in link. Check the email address or try again in a few minutes.";
+    return "Could not send the sign-in link. Supabase did not return details; check Auth email provider, SMTP, and rate limits.";
   }
 
   function getAdminRedirectUrl() {
