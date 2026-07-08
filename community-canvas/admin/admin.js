@@ -330,6 +330,10 @@
       return "Supabase is temporarily rate-limiting sign-in emails. Please wait about an hour and try again.";
     }
 
+    if (/failed to fetch|network/i.test(message)) {
+      return "Could not reach the Supabase project URL. Check config.js and confirm the project is active in Supabase.";
+    }
+
     if (/redirect/i.test(message)) {
       return "Supabase rejected the admin redirect URL. I updated the page to use the clean admin URL; refresh and try again.";
     }
