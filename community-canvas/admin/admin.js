@@ -169,6 +169,7 @@
     addMeta(meta, "Credit", getCreditLine(submission));
     addMeta(meta, "Paper confirmed", submission.paper_confirmed ? "Yes" : "No");
     addMeta(meta, "Method", getMethodLine(submission));
+    addMeta(meta, "Mailing list", submission.mailing_list_opt_in ? "Opted in" : "No");
     addMeta(meta, "Social", submission.social);
     addMeta(meta, "Website", submission.website);
     addMeta(meta, "Location", submission.location);

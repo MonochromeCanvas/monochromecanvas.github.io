@@ -9,6 +9,7 @@
     paperConfirmInput: document.getElementById("paperConfirmInput"),
     methodInputs: Array.from(document.querySelectorAll('input[name="artworkMethod"]')),
     otherMethodInput: document.getElementById("otherMethodInput"),
+    mailingListInput: document.getElementById("mailingListInput"),
     consentInput: document.getElementById("consentInput"),
     previewImage: document.getElementById("previewImage"),
     previewText: document.getElementById("previewText"),
@@ -186,6 +187,7 @@
       paper_confirmed: elements.paperConfirmInput.checked,
       artwork_methods: getSelectedMethods(),
       artwork_method_other: cleanText(formData.get("artworkMethodOther")),
+      mailing_list_opt_in: Boolean(elements.mailingListInput && elements.mailingListInput.checked),
       permission_confirmed: elements.consentInput.checked,
       source_url: window.location.href,
       user_agent: navigator.userAgent
@@ -256,6 +258,7 @@
       "Location or connection: " + cleanText(formData.get("location")),
       "Paper use: " + methodLine,
       "Other paper use: " + cleanText(formData.get("artworkMethodOther")),
+      "Mailing list opt-in: " + (formData.get("mailingListOptIn") ? "Yes" : "No"),
       "",
       "Note about the artwork:",
       cleanText(formData.get("artworkNote")),

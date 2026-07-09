@@ -41,6 +41,7 @@
           <ul>
             <li>Artwork must be made using Monochrome Canvas recycled studio paper.</li>
             <li>Email is required for private studio review and is never displayed publicly.</li>
+            <li>You will receive a confirmation email after submitting and a follow-up when the studio review is complete.</li>
             <li>Public artist credit is optional; anonymous submissions are welcome.</li>
             <li>Social handles and websites are displayed as text, not outbound links.</li>
             <li>Monochrome Canvas may share approved work on social media with the credit you provide.</li>
@@ -160,6 +161,14 @@
           </div>
 
           <label class="consent-box">
+            <input id="mailingListInput" name="mailingListOptIn" type="checkbox">
+            <span>
+              Optional: keep me in the studio loop with occasional Monochrome Canvas project updates,
+              artist resources, print offers, and studio news.
+            </span>
+          </label>
+
+          <label class="consent-box">
             <input id="consentInput" name="consent" type="checkbox" required>
             <span>
               I confirm I have permission to submit this artwork. I give Monochrome Canvas permission
@@ -189,6 +198,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config.js?v=20260624-paper-methods"></script>
     <script src="../supabase-client.js?v=20260624-paper-methods"></script>
-    <script src="../submit.js?v=20260708-fallback"></script>
+    <script src="../submit.js?v=20260708-mailing-opt-in"></script>
   </body>
 </html>

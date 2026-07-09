@@ -54,11 +54,10 @@
 
     try {
       const { data, error } = await supabase
-        .from("community_canvas_submissions")
+        .from("community_canvas_public_gallery")
         .select(
           "id, created_at, title, artist_name, credit_mode, social, website, location, artwork_note, image_path, heart_count, featured, display_order"
         )
-        .eq("status", "approved")
         .order("featured", { ascending: false })
         .order("display_order", { ascending: true })
         .order("created_at", { ascending: false });

@@ -48,7 +48,7 @@ create table if not exists public.community_canvas_submissions (
   artist_name text,
   social text,
   website text,
-  location text,
+  location: text,
   artwork_note text,
   endorsement text,
   image_path text not null,
@@ -57,6 +57,7 @@ create table if not exists public.community_canvas_submissions (
   paper_confirmed boolean not null default false,
   artwork_methods text[] not null default '{}',
   artwork_method_other text,
+  mailing_list_opt_in boolean not null default false,
   permission_confirmed boolean not null default false,
   source_url text,
   user_agent text,
@@ -68,6 +69,7 @@ create table if not exists public.community_canvas_submissions (
 create or replace function public.community_canvas_set_updated_at()
 returns trigger
 language plpgsql
+set_search_path = public
 as $$
 begin
   new.updated_at = now();
@@ -86,9 +88,11 @@ alter table public.community_canvas_submissions enable row level security;
 alter table public.community_canvas_submissions
   add column if not exists paper_confirmed boolean not null default false,
   add column if not exists artwork_methods text[] not null default '{}',
-  add column if not exists artwork_method_other text;
+  add column if not exists artwork_method_other text,
+  add column if not exists mailing_list_opt_in boolean not null default false;
 
-grant select, insert on public.community_canvas_submissions to anon;
+revoke select on public.community_canvas_submissions from anon;
+grant insert on public.community_canvas_submissions to anon;
 grant select, insert, update, delete on public.community_canvas_submissions to authenticated;
 
 drop policy if exists "Anyone can submit pending artwork" on public.community_canvas_submissions;
@@ -108,11 +112,6 @@ with check (
 );
 
 drop policy if exists "Anyone can view approved artwork" on public.community_canvas_submissions;
-create policy "Anyone can view approved artwork"
-on public.community_canvas_submissions
-for select
-to anon, authenticated
-using (status = 'approved');
 
 drop policy if exists "Studio admins can view all artwork" on public.community_canvas_submissions;
 create policy "Studio admins can view all artwork"
@@ -235,3 +234,27 @@ end;
 $$;
 
 grant execute on function public.community_canvas_increment_heart(uuid) to anon, authenticated;
+
+create or replace view public.community_canvas_public_gallery as
+select
+  id,
+  created_at,
+  updated_at,
+  featured,
+  display_order,
+  heart_count,
+  title,
+  credit_mode,
+  artist_name,
+  social,
+  website,
+  location,
+  artwork_note,
+  endorsement,
+  image_path,
+  artwork_methods,
+  artwork_method_other
+from public.community_canvas_submissions
+where status = 'approved';
+
+grant select on public.community_canvas_public_gallery to anon, authenticated;
