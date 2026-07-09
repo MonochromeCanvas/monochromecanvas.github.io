@@ -96,12 +96,12 @@ async function handleWebhookPayload(payload: WebhookPayload) {
     return { ok: true, event: "pending_submission", studioResult, artistResult };
   }
 
-  if (
+  const isReviewDecision =
     operation === "UPDATE" &&
-    previous &&
-    previous.status !== submission.status &&
-    (submission.status === "approved" || submission.status === "denied")
-  ) {
+    (!previous || previous.status !== submission.status) &&
+    (submission.status === "approved" || submission.status === "denied");
+
+  if (isReviewDecision) {
     if (!getArtistEmailsEnabled()) {
       return { ok: true, skipped: true, reason: "artist_emails_disabled" };
     }
