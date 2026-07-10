@@ -10,6 +10,7 @@
     reviewPanel: document.getElementById("reviewPanel"),
     reviewTitle: document.getElementById("reviewTitle"),
     statusFilter: document.getElementById("statusFilter"),
+    exportOptInsButton: document.getElementById("exportOptInsButton"),
     refreshButton: document.getElementById("refreshButton"),
     signOutButton: document.getElementById("signOutButton"),
     adminStatus: document.getElementById("adminStatus"),
@@ -51,6 +52,7 @@
   function bindEvents() {
     elements.loginForm.addEventListener("submit", handleLogin);
     elements.statusFilter.addEventListener("change", loadSubmissions);
+    elements.exportOptInsButton.addEventListener("click", exportOptIns);
     elements.refreshButton.addEventListener("click", loadSubmissions);
     elements.signOutButton.addEventListener("click", () => supabase.auth.signOut());
   }
@@ -261,6 +263,129 @@
 
     setAdminStatus("Submission deleted.", "success");
     await loadSubmissions();
+  }
+
+  async function exportOptIns() {
+    setAdminStatus("Preparing opt-in export...", "");
+    elements.exportOptInsButton.disabled = true;
+
+    const { data, error } = await supabase
+      .from("community_canvas_submissions")
+      .select("artist_email,artist_name,title,social,website,location,status,created_at,mailing_list_opt_in")
+      .eq("mailing_list_opt_in", true)
+      .order("created_at", { ascending: false });
+
+    elements.exportOptInsButton.disabled = false;
+
+    if (error) {
+      console.error(error);
+      setAdminStatus("Could not export opt-ins. Check your admin session and Supabase policy.", "error");
+      return;
+    }
+
+    const rows = buildOptInRows(Array.isArray(data) ? data : []);
+
+    if (!rows.length) {
+      setAdminStatus("No opted-in email addresses yet.", "");
+      return;
+    }
+
+    downloadCsv("community-canvas-opt-ins-" + getDateStamp() + ".csv", rows);
+    setAdminStatus("Exported " + rows.length + " opted-in email " + (rows.length === 1 ? "address." : "addresses."), "success");
+  }
+
+  function buildOptInRows(submissions) {
+    const byEmail = new Map();
+
+    submissions.forEach((submission) => {
+      const email = cleanText(submission.artist_email).toLowerCase();
+
+      if (!email) {
+        return;
+      }
+
+      const existing = byEmail.get(email);
+      const title = cleanText(submission.title) || "Untitled";
+
+      if (!existing) {
+        byEmail.set(email, {
+          email,
+          artist_name: cleanText(submission.artist_name),
+          social: cleanText(submission.social),
+          website: cleanText(submission.website),
+          location: cleanText(submission.location),
+          latest_submission_at: submission.created_at || "",
+          latest_status: submission.status || "",
+          submission_count: 1,
+          artwork_titles: title
+        });
+        return;
+      }
+
+      existing.submission_count += 1;
+
+      if (title && !existing.artwork_titles.split(" | ").includes(title)) {
+        existing.artwork_titles += " | " + title;
+      }
+
+      if (!existing.artist_name && submission.artist_name) {
+        existing.artist_name = cleanText(submission.artist_name);
+      }
+
+      if (!existing.social && submission.social) {
+        existing.social = cleanText(submission.social);
+      }
+
+      if (!existing.website && submission.website) {
+        existing.website = cleanText(submission.website);
+      }
+
+      if (!existing.location && submission.location) {
+        existing.location = cleanText(submission.location);
+      }
+    });
+
+    return Array.from(byEmail.values());
+  }
+
+  function downloadCsv(fileName, rows) {
+    const headers = [
+      "email",
+      "artist_name",
+      "social",
+      "website",
+      "location",
+      "latest_submission_at",
+      "latest_status",
+      "submission_count",
+      "artwork_titles"
+    ];
+    const csv = [
+      headers.join(","),
+      ...rows.map((row) => headers.map((header) => csvCell(row[header])).join(","))
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function csvCell(value) {
+    const text = String(value || "");
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  function getDateStamp() {
+    const now = new Date();
+    const year = String(now.getFullYear());
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return year + "-" + month + "-" + day;
   }
 
   function createActionButton(label, onClick, extraClass) {
