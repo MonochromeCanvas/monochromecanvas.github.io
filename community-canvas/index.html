@@ -9,13 +9,17 @@
       content="A Monochrome Canvas gallery of artwork created on recycled archival studio paper."
     >
     <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20260626-community-canvas">
-    <link rel="stylesheet" href="./style.css?v=20260624-polish">
+    <link rel="stylesheet" href="./style.css?v=20260710-gallery-grid">
     <link rel="stylesheet" href="./polish.css?v=20260624-polish">
     <link rel="stylesheet" href="./gallery-grid.css?v=20260710-gallery-row">
+    <link rel="stylesheet" href="./fine-art-display.css?v=20261001-gallery-refresh">
   </head>
-  <body>
+  <body class="gallery-landing">
     <header class="site-header">
-      <a class="brand" href="https://monochromecanvas.com" target="_blank" rel="noreferrer">Monochrome Canvas</a>
+      <a class="brand" href="https://monochromecanvas.com" target="_blank" rel="noreferrer" aria-label="Monochrome Canvas website">
+        <span class="brand-mark" aria-hidden="true">MC</span>
+        <span class="brand-name">Monochrome Canvas</span>
+      </a>
       <nav class="site-nav" aria-label="Gallery navigation">
         <a class="is-active" href="./">Gallery</a>
         <a href="./submit/">Submit</a>
@@ -35,6 +39,11 @@
             A curated gallery of works on recycled studio paper by artists and creative
             individuals connected to the Monochrome Canvas studio.
           </p>
+          <div class="hero-notes" aria-label="Project details">
+            <span>Fine art community gallery</span>
+            <span>Recycled archival studio paper</span>
+            <span>Reviewed before publication</span>
+          </div>
         </div>
       </section>
 
